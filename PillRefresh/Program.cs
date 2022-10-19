@@ -136,7 +136,7 @@ static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventNam
 {
     var calendar = new Ical.Net.Calendar();
 
-    var eventTime = new CalDateTime(finalDay.AddHours(6)); //midnight causes a faulty Outlook import where the end is 24 hours before the start
+    var eventTime = new CalDateTime(finalDay.AddHours(6), TimeZoneInfo.Local.Id); //midnight causes a faulty Outlook import where the end is 24 hours before the start
 
     var finalDayEvent = new CalendarEvent()
     {
