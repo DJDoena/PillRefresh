@@ -162,11 +162,11 @@ static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventNam
         Description = "Reminder",
     });
 
-    var serializer = new CalendarSerializer();
+    var icsFile = Path.Combine(Path.GetTempPath(), "pill.ics");
 
-    var tempFile = Path.Combine(Path.GetTempPath(), "pill.ics");
+    var ics = (new CalendarSerializer()).SerializeToString(calendar);
 
-    File.WriteAllText(tempFile, serializer.SerializeToString(calendar));
+    File.WriteAllText(icsFile, ics);
 
-    Process.Start("explorer.exe", tempFile);
+    Process.Start("explorer.exe", icsFile);
 }
