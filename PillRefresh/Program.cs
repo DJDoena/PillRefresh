@@ -6,9 +6,6 @@ using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using Res = PillRefresh.Resource;
 
-CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de-DE");
-CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture;
-
 Console.WriteLine(Res.Welcome);
 
 var pillCount = GetPillCount();
