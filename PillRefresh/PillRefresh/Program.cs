@@ -1,42 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using Ical.Net;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 
 Console.WriteLine("Welcome to pill calculation!");
 
-bool inputSuccess;
-uint pillCount;
-do
-{
-    Console.WriteLine("How many pills have you left?");
+var pillCount = GetPillCount();
 
-    var pillInput = Console.ReadLine();
-
-    inputSuccess = uint.TryParse(pillInput, out pillCount);
-
-    if (!inputSuccess)
-    {
-        Console.WriteLine("Not a number!");
-    }
-} while (!inputSuccess);
-
-double dosageCount;
-do
-{
-    Console.WriteLine("How many do you need to take per day?");
-
-    var dosageInput = Console.ReadLine();
-
-    inputSuccess = double.TryParse(dosageInput, NumberStyles.Float, CultureInfo.CurrentCulture, out dosageCount);
-
-    if (!inputSuccess)
-    {
-        Console.WriteLine("Not a number!");
-    }
-} while (!inputSuccess);
-
+var dosageCount = GetDosageCount();
 
 var daysLeft = Math.Floor(pillCount / dosageCount);
 
@@ -44,47 +17,9 @@ var finalDay = DateTime.Now.Date.AddDays(daysLeft);
 
 Console.WriteLine($"You run out of pills on {finalDay.ToShortDateString()}");
 
-uint reminderCount;
-DateTime reminderDay = default;
-do
-{
-    Console.WriteLine("How many days before that do you want a reminder?");
+var reminderDay = GetReminderDay(finalDay);
 
-    var reminderInput = Console.ReadLine();
-
-    inputSuccess = uint.TryParse(reminderInput, out reminderCount);
-
-    if (!inputSuccess)
-    {
-        Console.WriteLine("Not a number!");
-    }
-    else
-    {
-        reminderDay = finalDay.AddDays(-reminderCount);
-
-        if (reminderDay < DateTime.Now.Date)
-        {
-            Console.WriteLine("Reminder is older tan today!");
-
-            inputSuccess = false;
-        }
-    }
-} while (!inputSuccess);
-
-string? eventName;
-do
-{
-    Console.WriteLine("What should be the name of the reminder?");
-
-    eventName = Console.ReadLine();
-
-    inputSuccess = !string.IsNullOrWhiteSpace(eventName);
-
-    if (!inputSuccess)
-    {
-        Console.WriteLine("No name was given!");
-    }
-} while (!inputSuccess);
+var eventName = GetEventName();
 
 if (reminderDay.DayOfWeek == DayOfWeek.Saturday)
 {
@@ -99,49 +34,128 @@ else if (reminderDay.DayOfWeek == DayOfWeek.Monday) //in case the doctor takes t
     reminderDay = reminderDay.AddDays(-3);
 }
 
-CreateEvent(finalDay, reminderDay, eventName!);
+CreateEvent(finalDay, reminderDay, eventName);
+
+static uint GetPillCount()
+{
+    bool inputSuccess;
+    uint pillCount;
+    do
+    {
+        Console.WriteLine("How many pills have you left?");
+
+        var pillInput = Console.ReadLine();
+
+        inputSuccess = uint.TryParse(pillInput, out pillCount);
+
+        if (!inputSuccess)
+        {
+            Console.WriteLine("Not a number!");
+        }
+    } while (!inputSuccess);
+
+    return pillCount;
+}
+
+static double GetDosageCount()
+{
+    bool inputSuccess;
+    double dosageCount;
+    do
+    {
+        Console.WriteLine("How many do you need to take per day?");
+
+        var dosageInput = Console.ReadLine();
+
+        inputSuccess = double.TryParse(dosageInput, NumberStyles.Float, CultureInfo.CurrentCulture, out dosageCount);
+
+        if (!inputSuccess)
+        {
+            Console.WriteLine("Not a number!");
+        }
+    } while (!inputSuccess);
+
+    return dosageCount;
+}
+
+static DateTime GetReminderDay(DateTime finalDay)
+{
+    bool inputSuccess;
+    DateTime reminderDay = default;
+    do
+    {
+        Console.WriteLine("How many days before that do you want a reminder?");
+
+        var reminderInput = Console.ReadLine();
+
+        inputSuccess = uint.TryParse(reminderInput, out uint reminderCount);
+
+        if (!inputSuccess)
+        {
+            Console.WriteLine("Not a number!");
+        }
+        else
+        {
+            reminderDay = finalDay.AddDays(-reminderCount);
+
+            if (reminderDay < DateTime.Now.Date)
+            {
+                Console.WriteLine("Reminder is older tan today!");
+
+                inputSuccess = false;
+            }
+        }
+    } while (!inputSuccess);
+
+    return reminderDay;
+}
+
+static string GetEventName()
+{
+    bool inputSuccess;
+    string? eventName;
+    do
+    {
+        Console.WriteLine("What should be the name of the reminder?");
+
+        eventName = Console.ReadLine();
+
+        inputSuccess = !string.IsNullOrWhiteSpace(eventName);
+
+        if (!inputSuccess)
+        {
+            Console.WriteLine("No name was given!");
+        }
+    } while (!inputSuccess);
+
+    return eventName!;
+}
 
 static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventName)
 {
     var calendar = new Ical.Net.Calendar();
 
-    //var finalDayEvent = new CalendarEvent()
-    //{
-    //    Start = new CalDateTime(finalDay),
-    //    End = new CalDateTime(finalDay),
-    //    Description = finalDay.ToShortDateString(),
-    //    IsAllDay = true,
-    //    Summary = eventName,
-    //};
+    var eventTime = new CalDateTime(finalDay.AddHours(6)); //midnight causes a faulty Outlook import where the end is 24 hours before the start
 
-    //calendar.Events.Add(finalDayEvent);
-
-    //finalDayEvent.Alarms.Add(new Alarm()
-    //{
-    //    Trigger = new Trigger()
-    //    {
-    //        Duration = reminderDay - finalDay,
-    //    },
-    //    Action = "DISPLAY",
-    //    Description = "Reminder",
-    //});
-
-    var reminderDayEvent = new CalendarEvent()
+    var finalDayEvent = new CalendarEvent()
     {
-        Start = new CalDateTime(reminderDay),
-        End = new CalDateTime(reminderDay),
+        Start = eventTime,
+        End = eventTime,
         Description = finalDay.ToShortDateString(),
-        IsAllDay = true,
+        IsAllDay = false, //with IsAllDay the reminder is not imported by Outlook
         Summary = eventName,
+        Uid = Guid.NewGuid().ToString(),
     };
 
-    calendar.Events.Add(reminderDayEvent);
+    finalDayEvent.AddProperty(new CalendarProperty("X-MICROSOFT-CDO-BUSYSTATUS", "FREE"));
 
-    reminderDayEvent.Alarms.Add(new Alarm()
+    calendar.Events.Add(finalDayEvent);
+
+    finalDayEvent.Alarms.Add(new Alarm()
     {
         Trigger = new Trigger()
         {
-            Duration = TimeSpan.Zero,
+            Duration = reminderDay - finalDay,
         },
         Action = "DISPLAY",
         Description = "Reminder",
