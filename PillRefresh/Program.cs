@@ -134,8 +134,6 @@ static string GetEventName()
 
 static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventName)
 {
-    var calendar = new Ical.Net.Calendar();
-
     var eventTime = new CalDateTime(finalDay.AddHours(6), TimeZoneInfo.Local.Id); //midnight causes a faulty Outlook import where the end is 24 hours before the start
 
     var finalDayEvent = new CalendarEvent()
@@ -150,8 +148,6 @@ static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventNam
 
     finalDayEvent.AddProperty(new CalendarProperty("X-MICROSOFT-CDO-BUSYSTATUS", "FREE"));
 
-    calendar.Events.Add(finalDayEvent);
-
     finalDayEvent.Alarms.Add(new Alarm()
     {
         Trigger = new Trigger()
@@ -161,6 +157,10 @@ static void CreateEvent(DateTime finalDay, DateTime reminderDay, string eventNam
         Action = "DISPLAY",
         Description = "Reminder",
     });
+
+    var calendar = new Ical.Net.Calendar();
+
+    calendar.Events.Add(finalDayEvent);
 
     var icsFile = Path.Combine(Path.GetTempPath(), "pill.ics");
 
