@@ -12,7 +12,7 @@ var pillCount = GetPillCount();
 
 var dosageCount = GetDosageCount();
 
-var daysLeft = Math.Floor(pillCount / dosageCount);
+var daysLeft = Math.Floor(pillCount / dosageCount) - 1;
 
 var finalDay = DateTime.Now.Date.AddDays(daysLeft);
 
@@ -21,19 +21,6 @@ Console.WriteLine(string.Format(Res.PillEnd, finalDay.ToShortDateString()));
 var reminderDay = GetReminderDay(finalDay);
 
 var eventName = GetEventName();
-
-if (reminderDay.DayOfWeek == DayOfWeek.Saturday)
-{
-    reminderDay = reminderDay.AddDays(-1);
-}
-else if (reminderDay.DayOfWeek == DayOfWeek.Sunday)
-{
-    reminderDay = reminderDay.AddDays(-2);
-}
-else if (reminderDay.DayOfWeek == DayOfWeek.Monday) //in case the doctor takes two weeks vacation
-{
-    reminderDay = reminderDay.AddDays(-3);
-}
 
 CreateEvent(finalDay, reminderDay, eventName);
 
@@ -107,6 +94,19 @@ static DateTime GetReminderDay(DateTime finalDay)
             }
         }
     } while (!inputSuccess);
+
+    if (reminderDay.DayOfWeek == DayOfWeek.Saturday)
+    {
+        reminderDay = reminderDay.AddDays(-1);
+    }
+    else if (reminderDay.DayOfWeek == DayOfWeek.Sunday)
+    {
+        reminderDay = reminderDay.AddDays(-2);
+    }
+    else if (reminderDay.DayOfWeek == DayOfWeek.Monday) //in case the doctor takes two weeks vacation
+    {
+        reminderDay = reminderDay.AddDays(-3);
+    }
 
     return reminderDay;
 }
