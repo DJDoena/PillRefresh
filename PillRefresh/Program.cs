@@ -4,8 +4,12 @@ using Ical.Net;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
+using Res = PillRefresh.Resource;
 
-Console.WriteLine("Welcome to pill calculation!");
+CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de-DE");
+CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture;
+
+Console.WriteLine(Res.Welcome);
 
 var pillCount = GetPillCount();
 
@@ -15,7 +19,7 @@ var daysLeft = Math.Floor(pillCount / dosageCount);
 
 var finalDay = DateTime.Now.Date.AddDays(daysLeft);
 
-Console.WriteLine($"You run out of pills on {finalDay.ToShortDateString()}");
+Console.WriteLine(string.Format(Res.PillEnd, finalDay.ToShortDateString()));
 
 var reminderDay = GetReminderDay(finalDay);
 
@@ -42,7 +46,7 @@ static uint GetPillCount()
     uint pillCount;
     do
     {
-        Console.WriteLine("How many pills have you left?");
+        Console.WriteLine(Res.PillsLeft);
 
         var pillInput = Console.ReadLine();
 
@@ -50,7 +54,7 @@ static uint GetPillCount()
 
         if (!inputSuccess)
         {
-            Console.WriteLine("Not a number!");
+            Console.WriteLine(Res.ErrorNotANumber);
         }
     } while (!inputSuccess);
 
@@ -63,7 +67,7 @@ static double GetDosageCount()
     double dosageCount;
     do
     {
-        Console.WriteLine("How many do you need to take per day?");
+        Console.WriteLine(Res.PillsPerDay);
 
         var dosageInput = Console.ReadLine();
 
@@ -71,7 +75,7 @@ static double GetDosageCount()
 
         if (!inputSuccess)
         {
-            Console.WriteLine("Not a number!");
+            Console.WriteLine(Res.ErrorNotANumber);
         }
     } while (!inputSuccess);
 
@@ -84,7 +88,7 @@ static DateTime GetReminderDay(DateTime finalDay)
     DateTime reminderDay = default;
     do
     {
-        Console.WriteLine("How many days before that do you want a reminder?");
+        Console.WriteLine(Res.ReminderDays);
 
         var reminderInput = Console.ReadLine();
 
@@ -92,7 +96,7 @@ static DateTime GetReminderDay(DateTime finalDay)
 
         if (!inputSuccess)
         {
-            Console.WriteLine("Not a number!");
+            Console.WriteLine(Res.ErrorNotANumber);
         }
         else
         {
@@ -100,7 +104,7 @@ static DateTime GetReminderDay(DateTime finalDay)
 
             if (reminderDay < DateTime.Now.Date)
             {
-                Console.WriteLine("Reminder is older tan today!");
+                Console.WriteLine(Res.ErrorReminder);
 
                 inputSuccess = false;
             }
@@ -116,7 +120,7 @@ static string GetEventName()
     string? eventName;
     do
     {
-        Console.WriteLine("What should be the name of the reminder?");
+        Console.WriteLine(Res.ReminderName);
 
         eventName = Console.ReadLine();
 
@@ -124,7 +128,7 @@ static string GetEventName()
 
         if (!inputSuccess)
         {
-            Console.WriteLine("No name was given!");
+            Console.WriteLine(Res.ErrorReminderName);
         }
     } while (!inputSuccess);
 
