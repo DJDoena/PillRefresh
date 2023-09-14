@@ -1,33 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
+		<FileVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</FileVersion>
+		<EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Ical.Net" Version="4.2.0" />
-    <PackageReference Include="mitoSoft.Holidays" Version="2.0.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Ical.Net" Version="4.2.0" />
+		<PackageReference Include="mitoSoft.Holidays" Version="2.0.6" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resource.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Resource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resource.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resource.de.resx">
-      <DependentUpon>Resource.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Resource.de.resx">
+			<DependentUpon>Resource.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resource.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>
