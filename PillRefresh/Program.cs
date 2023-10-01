@@ -1,10 +1,10 @@
-﻿using Ical.Net;
+﻿using System.Diagnostics;
+using System.Globalization;
+using Ical.Net;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using mitoSoft.Holidays;
-using System.Diagnostics;
-using System.Globalization;
 using Res = PillRefresh.Resource;
 
 internal static class Program
@@ -12,8 +12,6 @@ internal static class Program
     private static void Main(string[] args)
     {
         var (countryCode, administrativeDivision, language) = GetParameters(args);
-
-        Console.WriteLine(Res.Welcome);
 
         if (!string.IsNullOrWhiteSpace(language))
         {
@@ -28,6 +26,8 @@ internal static class Program
             }
             catch { }
         }
+
+        Console.WriteLine(Res.Welcome);
 
         if (string.IsNullOrWhiteSpace(countryCode))
         {
