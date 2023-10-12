@@ -29,24 +29,28 @@ internal static class Program
             Console.WriteLine($"No administrativeDivision parameter given. Assuming '{administrativeDivision}'.");
         }
 
-        var pillCount = GetPillCount();
+        bool doAnotherCalculation;
+        do
+        {
+            var pills = GetPillCount();
 
-        var dosageCount = GetDosageCount();
+            var dosage = GetDosageCount();
 
-        var daysLeft = Math.Floor(pillCount / dosageCount) - 1;
+            var daysLeft = Math.Floor(pills / dosage) - 1;
 
-        var finalDay = DateTime.Now.Date.AddDays(daysLeft);
+            var finalDay = DateTime.Now.Date.AddDays(daysLeft);
 
-        Console.WriteLine(string.Format(Res.PillEnd, finalDay.ToShortDateString()));
+            Console.WriteLine(string.Format(Res.PillEnd, finalDay.ToShortDateString()));
 
-        var reminderDay = GetReminderDay(finalDay, countryCode, administrativeDivision);
+            var reminderDay = GetReminderDay(finalDay, countryCode, administrativeDivision);
 
-        var eventName = GetEventName();
+            var eventName = GetEventName();
 
-        CreateEvent(finalDay, reminderDay, eventName);
+            CreateEvent(finalDay, reminderDay, eventName);
 
-        //Console.WriteLine("Press <enter> to exit.");
-        //Console.ReadLine();
+            doAnotherCalculation = GetDoAnotherCalculation();
+        }
+        while (doAnotherCalculation);
     }
 
     private static (string countryCode, string administrativeDivision) GetParameters(string[] args)
@@ -91,17 +95,17 @@ internal static class Program
         return (countryCode, administrativeDivision);
     }
 
-    private static uint GetPillCount()
+    private static double GetPillCount()
     {
         bool inputSuccess;
-        uint pillCount;
+        double pills;
         do
         {
             Console.WriteLine(Res.PillsLeft);
 
-            var pillInput = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            inputSuccess = uint.TryParse(pillInput, out pillCount);
+            (inputSuccess, pills) = ReadDouble(input);
 
             if (!inputSuccess)
             {
@@ -109,20 +113,36 @@ internal static class Program
             }
         } while (!inputSuccess);
 
-        return pillCount;
+        return pills;
+    }
+
+    private static (bool inputSuccess, double number) ReadDouble(string input)
+    {
+        var inputSuccess = double.TryParse(input, NumberStyles.Float, CultureInfo.CurrentCulture, out var number);
+
+        var uiCulture = CultureInfo.CurrentUICulture;
+
+        if (!inputSuccess && CultureInfo.CurrentCulture.Name != uiCulture.Name)
+        {
+            inputSuccess = double.TryParse(input, NumberStyles.Float, uiCulture, out number);
+        }
+
+        inputSuccess = inputSuccess && number > 0;
+
+        return (inputSuccess, number);
     }
 
     private static double GetDosageCount()
     {
         bool inputSuccess;
-        double dosageCount;
+        double dosage;
         do
         {
             Console.WriteLine(Res.PillsPerDay);
 
-            var dosageInput = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            inputSuccess = double.TryParse(dosageInput, NumberStyles.Float, CultureInfo.CurrentCulture, out dosageCount);
+            (inputSuccess, dosage) = ReadDouble(input);
 
             if (!inputSuccess)
             {
@@ -130,7 +150,7 @@ internal static class Program
             }
         } while (!inputSuccess);
 
-        return dosageCount;
+        return dosage;
     }
 
     private static DateTime GetReminderDay(DateTime finalDay, string countryCode, string administrativeDivision)
@@ -245,10 +265,39 @@ internal static class Program
 
         var icsFile = Path.Combine(Path.GetTempPath(), "pill.ics");
 
-        var ics = (new CalendarSerializer()).SerializeToString(calendar);
+        var ics = new CalendarSerializer().SerializeToString(calendar);
 
         File.WriteAllText(icsFile, ics);
 
         Process.Start("explorer.exe", icsFile);
+    }
+
+    private static bool GetDoAnotherCalculation()
+    {
+        bool inputSuccess;
+        bool doAnotherCalculation;
+        do
+        {
+            Console.WriteLine(Res.AnotherCalculation);
+
+            var input = Console.ReadLine().ToLower();
+
+            doAnotherCalculation = input == "y"
+                || input == "j"
+                || input == "ja"
+                || input == "yes";
+
+            inputSuccess = doAnotherCalculation
+                || input == "n"
+                || input == "no"
+                || input == "nein";
+
+            if (!inputSuccess)
+            {
+                Console.WriteLine(Res.ErrorAnotherCalculation);
+            }
+        } while (!inputSuccess);
+
+        return doAnotherCalculation;
     }
 }

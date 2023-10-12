@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AnotherCalculation" xml:space="preserve">
+    <value>Eine weitere Tablettenberechnung? (j)a / (n)ein</value>
+  </data>
+  <data name="ErrorAnotherCalculation" xml:space="preserve">
+    <value>Antwort nicht verstanden!</value>
+  </data>
   <data name="ErrorNotANumber" xml:space="preserve">
     <value>Keine Zahl!</value>
   </data>

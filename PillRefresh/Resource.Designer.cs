@@ -61,6 +61,24 @@ namespace PillRefresh {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Another pill calculation? (y)es / (n)o.
+        /// </summary>
+        internal static string AnotherCalculation {
+            get {
+                return ResourceManager.GetString("AnotherCalculation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Did not understand reply!.
+        /// </summary>
+        internal static string ErrorAnotherCalculation {
+            get {
+                return ResourceManager.GetString("ErrorAnotherCalculation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a number!.
         /// </summary>
         internal static string ErrorNotANumber {
