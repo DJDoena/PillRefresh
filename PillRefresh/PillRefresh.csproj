@@ -8,7 +8,12 @@
 		<Version>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</Version>
 		<FileVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</FileVersion>
 		<EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+		<ApplicationIcon>djdsoft.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="djdsoft.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Ical.Net" Version="4.2.0" />

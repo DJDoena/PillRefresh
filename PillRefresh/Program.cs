@@ -11,9 +11,23 @@ internal static class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine(Res.Welcome);
+        var (countryCode, administrativeDivision, language) = GetParameters(args);
 
-        var (countryCode, administrativeDivision) = GetParameters(args);
+        if (!string.IsNullOrWhiteSpace(language))
+        {
+            var thread = Thread.CurrentThread;
+
+            try
+            {
+                var ci = CultureInfo.GetCultureInfo(language);
+
+                thread.CurrentCulture = ci;
+                thread.CurrentUICulture = ci;
+            }
+            catch { }
+        }
+
+        Console.WriteLine(Res.Welcome);
 
         if (string.IsNullOrWhiteSpace(countryCode))
         {
@@ -53,11 +67,13 @@ internal static class Program
         while (doAnotherCalculation);
     }
 
-    private static (string countryCode, string administrativeDivision) GetParameters(string[] args)
+    private static (string countryCode, string administrativeDivision, string language) GetParameters(string[] args)
     {
         string countryCode = null;
 
         string administrativeDivision = null;
+
+        string language = null;
 
         if (args?.Length > 0)
         {
@@ -66,7 +82,8 @@ internal static class Program
                 var lowered = a.ToLowerInvariant();
 
                 var startsWith = lowered.StartsWith("/countrycode=")
-                    || lowered.StartsWith("/country=");
+                    || lowered.StartsWith("/country=")
+                    || lowered.StartsWith("/c=");
 
                 return startsWith;
             });
@@ -90,9 +107,23 @@ internal static class Program
             });
 
             administrativeDivision = administrativeDivisionParam?.Split('=')[1];
+
+            var langParam = args.FirstOrDefault(a =>
+            {
+                var lowered = a.ToLowerInvariant();
+
+                var startsWith = lowered.StartsWith("/lanuage=")
+                    || lowered.StartsWith("/lang=")
+                    || lowered.StartsWith("/l=");
+
+                return startsWith;
+            });
+
+            language = langParam?.Split('=')[1];
+
         }
 
-        return (countryCode, administrativeDivision);
+        return (countryCode, administrativeDivision, language);
     }
 
     private static double GetPillCount()
